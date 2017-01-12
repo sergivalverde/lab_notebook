@@ -55,7 +55,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
    
    - There are different FM to choose as input. The authors select FM from low and high resolution pathways at different scales. 
 
-- *Intuitively*, adversarial training in this paper can be seen as follows: the more the domain network is able to separate between source and target activations, the higher the differences in the FM on the segmenter. So,  $\lambda_{adv}$ will be low and will not reduce the $\lambda_{segAdv}$ loss, which means that $\Theta_{seg}$ will be updated. When  
+
 
 * Experiments
 - Materials:
@@ -70,6 +70,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
 - Results:
 
 DSC, Recall and Precision for each of the evaluated pipelines:
+
 
 file:[[media/kamnitsas_2017_table.png]]
 
