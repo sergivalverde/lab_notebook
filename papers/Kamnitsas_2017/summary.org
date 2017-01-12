@@ -30,7 +30,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
 - The accuracy of a binary classifier that distinguishes between samples from two domains.
 - This is achieved by simultaneously learn a domain-invariant representation and a task-related classifier (segmenter) by a single network. This is done by minimizing the accuracy of the auxiliary network (domain), which processes the feature outputs maps (FM) of the segmenter network. 
 
-file:media/kamnitsas_2017_pipeline.png
+[[file:media/kamnitsas_2017_pipeline.png]]
 
 - *Segmenter* 
   - same network proposed in cite:Kamnitsas2016, learn using SGD. 
@@ -72,7 +72,7 @@ file:media/kamnitsas_2017_pipeline.png
 
 DSC, Recall and Precision for each of the evaluated pipelines:
 
-[[file://[[media/kamnitsas_2017_table.png]]]]
+file:[[media/kamnitsas_2017_table.png]]
 
 
 - Effect of adapting layers at different depths: 
