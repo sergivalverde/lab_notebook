@@ -72,7 +72,8 @@ file:media/kamnitsas_2017_pipeline.png
 
 DSC, Recall and Precision for each of the evaluated pipelines:
 
-file:media/kamnitsas_2017_table.png
+[[file://[[media/kamnitsas_2017_table.png]]]]
+
 
 - Effect of adapting layers at different depths: 
 
