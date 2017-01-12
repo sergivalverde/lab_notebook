@@ -3,12 +3,11 @@
 #+STARTUP: indent
 
  
-* Unsupervised domain adaptation in brain lesion segmentation with adversarial networks (Kamnitsas et al. 2017)
 
 Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b 
 
 
-** Summary
+* Summary
 
 - Deep learning is being used for a variety of biomedical applications. However, the performance of these systems often degrades when they are applied on new data that differ from the training data, for example, due to variations in imaging protocols. 
 
@@ -17,7 +16,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
 - The system is evaluated on two MRI databases of subjects with traumatic brain injuries (TBI). Each dataset has been acquired using different protocols and modalities (SWI, and GE). When using the training of the first database to test the second one, the performance of the segmentation network is $\sim 4\%$ lower than training and testing with the second database. In contrast, the performance of the unsupervised AN approach is close to the training and testing on T and to the upper bound of supervised domain adaptation (training on the first dataset and half of the second and test on the other half). 
 
   
-** Problem statement
+* Problem statement
 - Methods are trained on data from a source domain to predict data from the same domain.
 - Methods usually under-perform on images from a different /target domain/, because the optimal predictive function learned on the source domain may differ from the function that approximates the target domain.
 - This is common in biomedical applications, due to differences in protocols i/o image modalities used.
@@ -26,7 +25,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
 - Domain adaptation (DA) is a subclass of TL that assumes that $Y_s = Y_t$ and only the domains differ. 
 - In this work, /Unsupervised domain adaptation/ (UDA) is used to map domains from two different datasets. This is done via adversarial learning cite:Goodfellow2014 of a segmenter and a domain-classifier. 
  
-** Unsupervised domain adaptation with adversarial nets 
+* Unsupervised domain adaptation with adversarial nets 
 - The accuracy of a binary classifier that distinguishes between samples from two domains.
 - This is achieved by simultaneously learn a domain-invariant representation and a task-related classifier (segmenter) by a single network. This is done by minimizing the accuracy of the auxiliary network (domain), which processes the feature outputs maps (FM) of the segmenter network. 
 
@@ -58,7 +57,7 @@ Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b
 
 - *Intuitively*, adversarial training in this paper can be seen as follows: the more the domain network is able to separate between source and target activations, the higher the differences in the FM on the segmenter. So,  $\lambda_{adv}$ will be low and will not reduce the $\lambda_{segAdv}$ loss, which means that $\Theta_{seg}$ will be updated. When  
 
-** Experiments
+* Experiments
 - Materials:
   - 2 databases with different scanners protocols and modalities, common T1, T2, PD and FLAIR but different GE / SWI.
   - Annotations in both databases $S$ and $T$. 
@@ -79,13 +78,9 @@ file:[[media/kamnitsas_2017_table.png]]
 
 [[file:media/kamnitsas_2017_table2.png]]
 
-
-** Conclusions
-
-
-
-
-bibliographystyle:unsrt
-bibliography:/home/s/Dropbox/.org/.refs/library.bib
-
+* Conclusions
+- Novel method using unsupervised domain adaptation method for image segmentation by using adversarial training of two 3D neural networks.
+- Domain adaptation is still an open problem and this paper shows a promising solution.
+- Multi-connected adversarial networks, which perform better by enabling flow of higher quality adversarial gradients throughout the adapted network. 
+- While unsupervised in the target domain, the proposed method performs close to the accuracy of supervised baselines. 
 
