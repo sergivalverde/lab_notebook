@@ -1,0 +1,90 @@
+#+TITLE: Unsupervised domain adaptation in brain lesion segmentation with adversarial networks 
+#+AUTHOR: Sergi Valverde
+#+STARTUP: indent
+
+ 
+* Unsupervised domain adaptation in brain lesion segmentation with adversarial networks (Kamnitsas et al. 2017)
+
+Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b 
+
+
+** Summary
+
+- Deep learning is being used for a variety of biomedical applications. However, the performance of these systems often degrades when they are applied on new data that differ from the training data, for example, due to variations in imaging protocols. 
+
+- As a novelty, the authors claim that a potential new solution can be to use /unsupervised domain adaptation/, implemented via adversarial neural networks (AD). With adversarial training, domain-variant features learned over one dataset (/segmentation net/) are transformed to domain-variant features by the addition of an auxiliary network (/domain discriminator net/) which attempts to classify the domain of the input data by observing the activations of the segmentation net. The authors analyze several possible configurations  to feed the discriminator network based on the output feature maps of the segmentation network. 
+
+- The system is evaluated on two MRI databases of subjects with traumatic brain injuries (TBI). Each dataset has been acquired using different protocols and modalities (SWI, and GE). When using the training of the first database to test the second one, the performance of the segmentation network is $\sim 4\%$ lower than training and testing with the second database. In contrast, the performance of the unsupervised AN approach is close to the training and testing on T and to the upper bound of supervised domain adaptation (training on the first dataset and half of the second and test on the other half). 
+
+  
+** Problem statement
+- Methods are trained on data from a source domain to predict data from the same domain.
+- Methods usually under-perform on images from a different /target domain/, because the optimal predictive function learned on the source domain may differ from the function that approximates the target domain.
+- This is common in biomedical applications, due to differences in protocols i/o image modalities used.
+- Transfer learning (TL) investigates the development of predictive models by leveraging knowledge from potentially different but related domains and tasks.
+- In multitask learning, a model is trained on multiple related tasks simultaneously. 
+- Domain adaptation (DA) is a subclass of TL that assumes that $Y_s = Y_t$ and only the domains differ. 
+- In this work, /Unsupervised domain adaptation/ (UDA) is used to map domains from two different datasets. This is done via adversarial learning cite:Goodfellow2014 of a segmenter and a domain-classifier. 
+ 
+** Unsupervised domain adaptation with adversarial nets 
+- The accuracy of a binary classifier that distinguishes between samples from two domains.
+- This is achieved by simultaneously learn a domain-invariant representation and a task-related classifier (segmenter) by a single network. This is done by minimizing the accuracy of the auxiliary network (domain), which processes the feature outputs maps (FM) of the segmenter network. 
+
+file:media/kamnitsas_2017_pipeline.png
+
+- *Segmenter* 
+  - same network proposed in cite:Kamnitsas2016, learn using SGD. 
+
+- *Domain Discriminator*
+  - Input samples of the discriminator network are the activations of the FM in the segmenter at different levels (see figure). If source and target domains differ considerably,  FM activations should not be invariant.
+
+  - The discriminator network is trained to separate between source and target databases samples, so *the classification accuracy serves as a base of how source-specific FM of the segmenter are.* 
+
+  - The discriminator network is composed of a 5-layer 3D CNN with 100 kernels. 
+
+- *Adversarial training:*
+
+  - The domain-discriminator model is trained simultaneously with the segmenter. Two separated batches are considered, one balanced batch for the segmented ($B_{seg}$) as in cite:Kamnitsas2016, and another one ($B_{adv}$) that is composed of the same number of samples from source and target databases. 
+
+  - *Domain adaptation* is achieved by incorporating the domain discriminator loss $\lambda_{adv}$ into the segmenter loss $\lambda_{seg}$ as:
+
+    $\lambda_{segAdv}(\Theta_{seg})= \lambda_{seg}$ - \alpha \lambda_{adv}$
+
+    where $\alpha$ is a positive weight that defines the relative importance of the domain-adaptation task. *Intuitively*, the more the discriminator network is incapable to separate between source and target databases, the higher the accuracy of the segmenter will be, as both $\lambda_{adv}$ and $\lambda_{seg}$ are inter-connected. 
+
+- *Multi-connected adversarial networks:* 
+   
+   - There are different FM to choose as input. The authors select FM from low and high resolution pathways at different scales. 
+
+- *Intuitively*, adversarial training in this paper can be seen as follows: the more the domain network is able to separate between source and target activations, the higher the differences in the FM on the segmenter. So,  $\lambda_{adv}$ will be low and will not reduce the $\lambda_{segAdv}$ loss, which means that $\Theta_{seg}$ will be updated. When  
+
+** Experiments
+- Materials:
+  - 2 databases with different scanners protocols and modalities, common T1, T2, PD and FLAIR but different GE / SWI.
+  - Annotations in both databases $S$ and $T$. 
+- Four different configurations are tested: 
+  - Train on S and test on T
+  - Train on T and test on T
+  - Train on S + T and test on T
+  - Train on S and T with adversarial training and test on T.
+
+- Results:
+
+DSC, Recall and Precision for each of the evaluated pipelines:
+
+file:media/kamnitsas_2017_table.png
+
+- Effect of adapting layers at different depths: 
+
+file:media/kamnitsas_2017_table2.png
+
+
+** Conclusions
+
+
+
+
+bibliographystyle:unsrt
+bibliography:/home/s/Dropbox/.org/.refs/library.bib
+
+

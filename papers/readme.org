@@ -1,0 +1,7 @@
+* Summaries of reviewed scientific papers
+
+** 2017
+- *Kamnitsas et al., Unsupervised domain adaptation in brain lesion segmentation with adversarial neural networks. [[http://arxiv.org/abs/1612.08894][Arxiv]]. Folder: file:Kamnitsas_2017/summary.org
+
+
+ 
