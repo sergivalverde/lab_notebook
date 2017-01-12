@@ -77,7 +77,7 @@ DSC, Recall and Precision for each of the evaluated pipelines:
 
 - Effect of adapting layers at different depths: 
 
-file:media/kamnitsas_2017_table2.png
+[[file:media/kamnitsas_2017_table2.png]]
 
 
 ** Conclusions
