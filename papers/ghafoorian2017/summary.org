@@ -111,7 +111,7 @@ Different training set image sizes were used in 2) and 3): 2 to 100 cases. Diffe
 2. The same trained mode on the target domain failed completely (DSC = 0.005)
 3. Results of tine tunning:  
 
-file:media/figure_2.png
+[[file:media/figure_2.png]]
 
 4. *Given a small set of training examples from the target domain, the adapted model substantially outperforms the model trained from scratch with the same number of training data*
 5. From the figure, it can be seen that as soon as more training data becomes available, it makes more sense to fine-tune the shallower representations (e.g., the last convolutional layers).
