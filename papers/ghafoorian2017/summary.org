@@ -1,0 +1,125 @@
+#+TITLE: Transfer learning for Domain Adaptation in MRI: Application in Brain Lesion Segmentation
+#+AUTHOR: Sergi Valverde
+#+STARTUP: indent
+
+ 
+Review of the paper proposed by Ghafoorian et al cite:Ghafoorian2017.
+
+
+* Summary
+
+In this paper, the authors analyze the use of transfer learning in brain lesion segmentation. Given a trained model on legacy data, the authors answer the following questions: 
+
+1) How much data from a new /target/ domain is required for a decent adaptation of the original network? 
+2) What portion of the pre-trained model parameters should be retrained given a certain number of the new domain samples? 
+
+An interesting application of this framework is the common scenario when a large set of annotated legacy data is available, often collected in a time-consuming ad costly process. Then, there is a change in the protocol, which makes the use of these trained models unsuccessful. 
+
+The authors perform several experiments when they show that by tuning only the domain-adapted network with two training samples from the target domain, the performance of the domain-adapted network was 0.63, substantially outperforming a similar network trained on the same set of examples from scratch. 
+
+
+
+
+* Problem statement: 
+- CNN are being widely used in medical image analysis, given their outperforming capability in classification and segmentation.
+- However, the generalization of these methods may be poor, given the high variations in soft tissue between different protocols and acquisitions.
+- In the medical image analysis literature, different studies have been carried out:
+  + A. Van Opbroek, M A. Ikram, M. W Vernooij, and M. De Bruijne. Transfer learning improves supervised image segmentation across imaging protocols. IEEE transactions on medical imaging, 34(5):1018–1030, 2015.
+  + V. Cheplygina, I. P. Pena, J. H. Pedersen, D. A Lynch, L. Sørensen, andM. de Brui- jne. Transfer learning for multi-center classification of chronic obstructive pul- monary disease. arXiv preprint arXiv:1701.05013, 2017.
+  + A. Esteva, B. Kuprel, R. A Novoa, J. Ko, S. M Swetter, H. M Blau, and S. Thrun. Dermatologist-level classification of skin cancer with deep neural networks. Nature, 542(7639):115–118, 2017.
+  + N. Tajbakhsh, J. Y Shin, S. R Gurudu, R Todd Hurst, Christopher B Kendall, Michael B Gotway, and Jianming Liang. Convolutional neural networks for medical image analysis: full training or fine tuning? IEEE transactions on medical imaging, 35(5):1299–1312, 2016.
+- Considering the hierarchical structure of CNN, it is expected to have layers that learn simple visual learning blocks such as edges, corners of blobs, while deeper networks learn *more abstract task-dependent* features.
+  - How abstract qualities are preserved during transfer learning for domain adaptation?
+- An interesting application is when a large set of annotated legacy data is available, often collected in a time-consuming ad costly process. Then, there is a change in the protocol, which makes the use of these trained models unsuccessful.
+
+
+
+* Materials and methods:
+
+** Data:
+Data characteristics are important here. All experiments were carried out using data from the RUN-DMC cohort at Radbound University (Nijmegen).
+
+*** Source dataset: 
+- Siemens 1.5T scanner, 258 scans
+- FLAIR (1 x 1.2 x 5mm) with inter-slice gap of 1.0mm.
+- T1 MPRAGE (1 x 1 x 1mm)
+- semi-automatic annotations of White matter Hyper-intensities (WMH)
+
+*** Target dataset: 
+- Same Siemens scanner, 159 scans 
+- FLAIR (1 x 1.2 x 3mm) with inter-slice gap of 1.0mm.
+- T1 MPRAGE (1 x 1 x 1mm)
+- semi-automatic annotations of WMH
+
+
+** Sampling: 
+- Using 32 x 32 patches and assigning each patch with the label of the corresponding central voxel.
+- 25% of all samples were sampled from the positive class, and then the same number of voxels were also selected from the negative class (all brain)
+- Using data augmentation (~1.2M training samples (baseline))
+
+** Network architecture:
+- Stacking FLAIR and T1 as inputs channels.
+- 15 channel network:
+
+ | layer | type  |    size |
+ |-------+-------+---------|
+ |     1 | input |   32x32 |
+ |     2 | conv  |  3x3x16 |
+ |     3 | conv  |  3x3x16 |
+ |     4 | conv  |  3x3x32 |
+ |     5 | conv  |  3x3x32 |
+ |     6 | conv  |  3x3x64 |
+ |     7 | conv  |  3x3x64 |
+ |     8 | conv  | 3x3x128 |
+ |     9 | conv  | 3x3x128 |
+ |    10 | conv  | 3x3x256 |
+ |    11 | conv  | 3x3x256 |
+ |    12 | conv  | 3x3x512 |
+ |    13 | conv  | 3x3x512 |
+ |    14 | dense |     256 |
+ |    15 | dense |     128 |
+ |    16 | dense |       2 |
+ |    17 | dense | softmax |
+ |-------+-------+---------|
+
+- Adam update with cross-entropy cost and mini-batch of 128 (starting learning rate 0.0001)
+- Initialized using He method cite:He2015
+- Batch Normalization
+- Dropout 0.3 and L_2 weight decay
+- For each model, the best configuration was taken from ROC analysis
+- *At segmentation time, dense layers were converted to fully convolutional layers to speed up the process*. However, the network was trained using a patch-wise approach. Justification: \"We prefer the conceptual distinction between dense and convolutional layers at the training time, to keep the general- ity of experiments for classification problems as well (e.g., testing the benefits of fine-tuning the convolutional layers in addition to the dense layers). Patch-based training allows class-specific data augmentation to handle domains with hugely imbalanced class ratios (e.g., WMH segmentation domain)"\
+
+
+** Domain adaptation:
+- Domain adaptation was done by freezing the first $i$ layers, and re-training the rest.
+- Using the same update-rule from the previous network
+
+
+** Experiments:
+
+Comparison of three different scenarios: 
+
+1) training a model on the source domain and directly applying it on the target domain
+2) training networks on the target domain data from scratch
+3) Transferring model learned on the source domain onto the target domain with fine-tuning 
+
+Different training set image sizes were used in 2) and 3): 2 to 100 cases. Different fine-tuned layers. 
+
+* Results: 
+
+1. Model trained and tested on the source domain achieved a DSC = 0.76
+2. The same trained mode on the target domain failed completely (DSC = 0.005)
+3. Results of tine tunning:  
+
+file:media/figure_2.png
+
+4. *Given a small set of training examples from the target domain, the adapted model substantially outperforms the model trained from scratch with the same number of training data*
+5. From the figure, it can be seen that as soon as more training data becomes available, it makes more sense to fine-tune the shallower representations (e.g., the last convolutional layers).
+
+* questions:
+
+** TODO all experiments are carried in the same scanner, but different protocols? Which is the effect of this kind of setup with different scanners?  
+** TODO The image view used for sampling voxels is not indicated in the study (axial, saggital, coronal)
+** TODO Which is the effect of different sampling spaces when using 2.5D / 3D patches?
+** TODO So, these results show that at least with the data presented, transfer learning can be also interesting to boost  the performance of CNN methods up to a certain number of cases (small training datasets? 
+*** How is this related with real differences in image domains? 

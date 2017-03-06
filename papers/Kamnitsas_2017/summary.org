@@ -3,7 +3,6 @@
 #+STARTUP: indent
 
  
-
 Review of the paper proposed by Kamnitsas et al. 2017 cite:Kamnitsas2016b 
 
 
@@ -84,4 +83,4 @@ file:[[media/kamnitsas_2017_table.png]]
 - Domain adaptation is still an open problem and this paper shows a promising solution.
 - Multi-connected adversarial networks, which perform better by enabling flow of higher quality adversarial gradients throughout the adapted network. 
 - While unsupervised in the target domain, the proposed method performs close to the accuracy of supervised baselines. 
-
+  
