@@ -97,12 +97,14 @@ In this paper, the authors introduce adversarial networks (AN) into semantic seg
 
 - Results for different training samples:
 
-[[file:media/figure1.png
-]]
-  
+[[file:media/figure1.png]]  
+
+
 # bibliography 
 bibliographystyle:unsrt
 bibliography:/home/s/Dropbox/.org/.refs/library.bib
+
+
 
 
 

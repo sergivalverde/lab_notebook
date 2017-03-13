@@ -3,4 +3,4 @@
 ** 2017
 - Kamnitsas et al., Unsupervised domain adaptation in brain lesion segmentation with adversarial neural networks. [[http://arxiv.org/abs/1612.08894][Arxiv]]. Folder: [[file:Kamnitsas_2017/summary.org]]
 - Ghafoorian et al. 2017. Transfer Learning for Domain Adaptation in MRI: Application in Brain Lesion Segmentation. [[http://arxiv.org/abs/1702.07841][Arxiv]]. Folder: [[file:ghafoorian2017]]/summary.org
-- Kohl et al. 2017. Adversarial Networks for the Detection of Aggressive Prostate Cancer.[[http://arxiv.org/abs/1702.08014][Arxiv]]. Folder: file:kohl2017/summary.org
+- Kohl et al. 2017. Adversarial Networks for the Detection of Aggressive Prostate Cancer. [[http://arxiv.org/abs/1702.08014][Arxiv]]. Folder: [[file:kohl2017/summary.org]]
