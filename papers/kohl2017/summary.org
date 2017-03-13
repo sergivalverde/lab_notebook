@@ -1,0 +1,108 @@
+#+TITLE: Adversarial networks for the Detection of Aggressive Prostate Cancer
+#+AUTHOR: Sergi Valverde
+#+STARTUP: indent
+
+
+Summary of the paper proposed by cite:Kohl2017 (MICCAI2017):
+
+
+* Summary:
+
+In this paper, the authors introduce adversarial networks (AN) into semantic segmentation of MRI images from aggressive prostate cancer. Although fully convolutional networks (FCN) are the facto standard in semantic segmentation, this segmentation is *agnostic* towards the structure of the predicted label maps, and valuable complementary information about the global quality of the segmentation remains idle. Because the adversary constitutes a learned parametrization of what makes a good segmentation at a global level, the authors hypothesize that the method holds particular advantages for segmentation tasks on complex structured, small datasets. As the core contribution, they show the superiority of the adversarial training scheme over the standard cross-entropy approach on the proposed segmentation task. This holds true across varied amounts of training examples and bears particularly strong relative gains in the small dataset limit.
+
+
+* Problem statement:
+
+- Pixel-based training loss formulations are independent between voxels, excluding extra information that may be valuable. Recent work in the field of semantic segmentation was dedicated towards introducing ‘structure’ to deep nets, for which mostly integrated or second-stage conditional random fields (CRFs) have been considered. 
+- A novel and barely explored approach however aims for lending ‘structure’ to deep models during training and employs adversarial networks cite:Luc2016, cite:Isola2016
+- The authors hypothesize that penalizing global dependencies in the label maps during training leverages complementary information, which the standard cross-entropy training cold-shoulders.
+
+
+* Methods:
+
+** Adversarial training for semantic segmentation:
+
+- A generative model *G* (when deterministic equivalent to a segmenter *S*) and a discriminator (*D*).
+- Generative adversarial networks  are closely related to the task of semantic segmentation *with D being interpretable as a learned higher-order loss*, a potential that has recently been realized cite:Luc2016, cite:Isola2016.
+- The advantages of adversarial training are that it does not introduce additional complexity to the model and requires no manual design of higher-order losses, resulting in very efficient models.
+- In this paper, the authors use a purely adversarial training for FCNs instead of de facto standard training for semantic segmentation:
+- $D$ loss is defined alongside the segmentor $S$: 
+  
+  $L_D(\Theta_D, \Theta_S) = -1 \frac{1}{N}\sum_i^N{log D(y_i) + log(1 - D(S(x_i)))}$
+
+- Following the same approach on cite:Goodfellow2014, $S$ loss is expressed as:
+
+ $L_S(\Theta_D, \Theta_S) =  -1 \frac{1}{N}\sum_i^N{log D(x_i)}$
+
+- Optimal training requires for $D$ to be near its optimal solution at all times. For this purpose, $D$ can be trained using $k$ minibatch gradient descent steps for each such step performed on $S$.
+
+** Data:
+- 152 patients Siemens Prisma 3T
+- T2w, Apparent Diffusion Coefficient and b-value diffusion weighted image (b1500)
+- Three classes (tumor lesion, peripheral zone and transitional zone). 
+- 55 patients ($S_{agg}$) comprising 188 2D-for all evaluated schemes comprising 188 2D-slices with biopsy-confirmed aggressive tumor lesions of $GS\geq7$
+- 97 patients ($S_{free}$) with 475 2D-slices that were diagnosed lesion free (slice size 3×416×416).
+- The experiments are performed using four-fold cross-validation on $S_{agg}$ with mu-The experiments are performed using four-fold cross-validation on $S_{agg}$ with mutually exclusive subject allocation to the folds, while $S_{free}$ is used during training only.
+- All segmentation models are trained for 225 epochs, with 80 randomly sampled batches each, using an initial learning rate (LR) of $10^{-5}$, that is halved every 75 epochs. During the adversarial training scheme we train the discriminator $D$ on 3 batches for each batch the segmentor is trained on while using fixed $LR=10^{-5}$ for $D$.
+- Using Adam and data augmentation
+- Batch size of 5 with importance sampling, averaging to 3.5 samples for $S_{agg}$ in each batch.
+
+
+** Network architecture
+- U-net type cite:Ronneberger2015 with InstanceNorm to avoid *harmful stochasticity* induced by small mini-batches.
+- Segmentor Net:
+
+| layer | type | num_filters |    size | non-linearity |
+|-------+------+-------------+---------+---------------|
+| input |      |           3 | 416x416 |               |
+|-------+------+-------------+---------+---------------|
+|     1 | CONV |          64 |     3x3 | leaky-relu    |
+|     2 | CONV |         128 |     3x3 | leaky-relu    |
+|     3 | CONV |         256 |     3x3 | leaky-relu    |
+|     4 | CONV |         512 |     3x3 | leaky-relu    |
+|     5 | CONV |        1024 |     3x3 | leaky-relu    |
+|-------+------+-------------+---------+---------------|
+|     6 | CONV |         512 |     3x3 | relu          |
+|     7 | CONV |         256 |     3x3 | relu          |
+|     8 | CONV |         128 |     3x3 | relu          |
+|     9 | CONV |          64 |       - | relu          |
+|    10 | CONV |           4 |     1x1 | relu          |
+|-------+------+-------------+---------+---------------|
+
+- Discriminator Net (D takes 7×416×416 inputs, featuring three chan- nels for the MRI modalities and four channels encoding the class labels)
+
+| layer | type                        | num_filters |    size | non-linearity |
+|-------+-----------------------------+-------------+---------+---------------|
+| input |                             |           7 | 416x416 |               |
+|-------+-----------------------------+-------------+---------+---------------|
+|     1 | CONV                        |          64 |     3x3 | leaky-relu    |
+|     2 | CONV                        |         128 |     3x3 | leaky-relu    |
+|     3 | CONV                        |         256 |     3x3 | leaky-relu    |
+|     4 | CONV                        |         512 |     3x3 | leaky-relu    |
+|     5 | CONV                        |        1024 |     3x3 | leaky-relu    |
+|     6 | FC + global average pooling |           1 |       1 | leaky-relu    |
+|-------+-----------------------------+-------------+---------+---------------|
+
+
+* Results:
+
+- Adversarial approach scores significantly better than tumor segmentation: 
+
+| training scheme   | cross-entropy | adversarial |
+|-------------------+---------------+-------------|
+| tumor DSC         | 0.35 ± 0.29   | 0.41 ± 0.28 |
+| tumor sensitivity | 0.37 ± 0.33   | 0.55 ± 0.36 |
+| tumor specificity | 0.98 ± 0.14   | 0.98 ± 0.14 |
+|-------------------+---------------+-------------|
+
+- Results for different training samples:
+
+[[file:media/figure1.png
+]]
+  
+# bibliography 
+bibliographystyle:unsrt
+bibliography:/home/s/Dropbox/.org/.refs/library.bib
+
+
+

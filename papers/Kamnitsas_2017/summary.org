@@ -84,3 +84,4 @@ file:[[media/kamnitsas_2017_table.png]]
 - Multi-connected adversarial networks, which perform better by enabling flow of higher quality adversarial gradients throughout the adapted network. 
 - While unsupervised in the target domain, the proposed method performs close to the accuracy of supervised baselines. 
   
+  
